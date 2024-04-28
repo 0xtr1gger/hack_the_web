@@ -32,6 +32,9 @@ Passive subdomain enumeration methods include:
 - Third-party services
 	- Querying third-party datasets of historical DNS query results, provided by services like [`SecurityTrails`](https://securitytrails.com/), [`Censys`](https://censys.io/), [`Shodan`](https://www.shodan.io/), [`BinaryEdge`](https://www.binaryedge.io/), [`VirusTotal`](https://www.virustotal.com/gui/), [`WhoisXMLAPI`](https://main.whoisxmlapi.com/), etc. The use of these services doesn't involve sending any requests directly to the target server, but rather querying independent databases.
 
+- Public sources
+	- Any internet resource leaves traces, and some of these traces are exposed to the public. Internet archives, developing and collaboration platforms, and other sources are valuable for investigating not only subdomains, but security posture of the target and sometimes even sensitive information.
+
 - Certificate Transparency
 	- Analyzing TLS certificates issued for a given domain to find certificates associated with its subdomains by inspecting publicly available append-only Certificate Transparency (CT) logs.
 
