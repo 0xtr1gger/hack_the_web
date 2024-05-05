@@ -350,8 +350,7 @@ Usage:
 ```bash
 ct -d github.com -o ct.txt
 ```
-
-
+![ctfr-github com](https://github.com/0xtr1gger/hack_the_web/assets/167773454/4c67c3c5-167d-486b-bee7-4e39219ccc92)
 
 The problem with `ctfr` is that it also outputs wildcards, as there might be certificates that are created for multiple domains. To remove lines with `*.` characters, the `grep` command can be used. But prior to it, save wildcards, also with `grep`, for future investigation just in case (these subdomains are very likely to be valid, and are likely to contain interesting subdomains deeper).
 
@@ -449,7 +448,8 @@ Example:
 openssl s_client -connect wikimedia.org:443 2>/dev/null | openssl x509 -noout -ext subjectAltName | grep -oP '(?<=DNS:|IP Address:)[^,]+'|sort -uV
 ```
 
-![[SAN-subdomain-wikimedia.png]]
+![SAN-subdomain-wikimedia](https://github.com/0xtr1gger/hack_the_web/assets/167773454/32e5cc3e-af67-4a4a-9299-d6550edbd531)
+
 
 The process can also be automated with the [`san_subdomain_enum`](https://github.com/appsecco/the-art-of-subdomain-enumeration/blob/master/san_subdomain_enum.py) Python script:
 
@@ -465,7 +465,7 @@ python ./san_subdomain_enum.py domain.com
 
 >A <span style="color:#f00000">favicon</span> (favorite icon), aka website icon, tab icon, URL icon, etc., is a file containing one or more small icons associated with a particular website or web page. It is displayed to the left side of the webpage title the tabs, bookmarks, and links bars.
 
-![[favicon_wiki.png]]
+![favicon_wiki](https://github.com/0xtr1gger/hack_the_web/assets/167773454/0ee9c5d9-d7a2-42db-9f3a-68cfbf6a605d)
 
 Typically, favicons are in ICO, SVG, and PNG formats, but they can also be JPEG or even animated GIF pictures. 
 
@@ -513,7 +513,8 @@ To install MurmurHash Python library, `mmh3`:
 pip install mmh3
 ```
 
-![[mmh_python.png]]
+![mmh_python](https://github.com/0xtr1gger/hack_the_web/assets/167773454/feefb913-194e-45db-80ab-d936e20a5af5)
+
 
 Online services to retrieve favicon hashes:
 - [`favicon-hash`](https://favicon-hash.kmsec.uk/)
