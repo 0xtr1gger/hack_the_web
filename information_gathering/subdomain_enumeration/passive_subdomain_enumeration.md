@@ -56,6 +56,14 @@ Other useful resources:
 
 ###### `Amass`
 
+`Amass` is a Swiss army knife for subdomains enumeration, an OWASP project, that outperforms passive enumeration the best.
+
+Installation:
+
+```bash
+go install -v github.com/owasp-amass/amass/v4/v4.2.0
+```
+
 Basic usage:
 
 ```bash
@@ -76,7 +84,9 @@ amass enum -d domain.com
 | `-w`     | path to a different wordlist file for brute forcing                |
 | `-trqps` | maximum number of DNS queries per second for each trusted resolver |
 
-One of the notable options is `-p` which allows specifying port numbers to scan. It is often useful to try not only the `433` port (HTTPS), which is set by default, but also `80` (HTTP) and a list of commonly used non-standard ports, such as `8080`, as a subdomain may be hosted on any port.
+One of the notable options is `-p` which allows you to specify port numbers to scan. It is often useful to try not only the `433` port (HTTPS), which is set by default, but also `80` (HTTP) and a list of commonly used non-standard ports, such as `8080`, as a subdomain may be hosted there either.
+
+More information on how to use the tool can be found in the [`Amass user guide`](https://github.com/owasp-amass/amass/blob/master/doc/user_guide.md).
 
 ###### `Subfinder`
 
@@ -95,51 +105,15 @@ cd subfinder/v2/cmd/subfinder
 go build .
 mv subfinder /usr/local/bin/
 subfinder -h
+
 ```
 
 `subfinder` can be used right after the installation, however many sources required API keys to work. They need to be configured in `Subfinder` configuration file, located at `~/.config/subfinder/provider-config.yaml`
-
-Here is the example of an API configuration file for `Subfinder`:
-
-Sources that require API keys:
-
-```bash
-bevigil *
-binaryedge *
-bufferover *
-c99 *
-censys *
-certspotter *
-chaos *
-chinaz *
-dnsdb *
-dnsrepo *
-fofa *
-fullhunt *
-github *
-hunter *
-intelx *
-netlas *
-leakix *
-passivetotal *
-quake *
-redhuntlabs *
-robtex *
-securitytrails *
-shodan *
-threatbook *
-virustotal *
-whoisxmlapi *
-zoomeyeapi *
-facebook *
-builtwith *
-```
 
 Sources that doesn't require API keys:
 
 ```
 alienvault
-anubis
 commoncrawl
 crtsh
 digitorus
@@ -149,6 +123,7 @@ rapiddns
 riddler
 waybackarchive
 ```
+
 
 List of all sources supported by `Subfinder`:
 
@@ -182,31 +157,33 @@ List of all sources supported by `Subfinder`:
 | `ZoomEye`        | `https://www.zoomeye.org`                             |
 | `ZoomEye` API    | `https://api.zoomeye.org`                             |
 
-| option                    | description                                         |
-| ------------------------- | --------------------------------------------------- |
-| `-d`                      | domains to find subdomains for                      |
-| `-dL`                     | file with a list of domains for subdomain discovery |
-| `-s`, `-sources`          | use only specific sources for enumeration           |
-| `-recursive`              |                                                     |
-| `-all`                    |                                                     |
-| `-es`, `-exclude-sources` |                                                     |
-| `-m`                      |                                                     |
-| `-f`                      |                                                     |
-| `-rl`, `-rate-limit`      |                                                     |
-| `-t`                      |                                                     |
-| `-up`                     |                                                     |
-| `-o`, `-output`           |                                                     |
-| `-oJ`, `-json`            |                                                     |
-| `-oD`, `-output-dir`      |                                                     |
-| `-cs`, `-collect-sources` |                                                     |
-| `-oI`, `-ip`              |                                                     |
-| `-config`                 |                                                     |
-| `-nW`                     |                                                     |
-| `-proxy`                  |                                                     |
-| `-ei`, `-exclude-ip`      |                                                     |
-| `-v`                      |                                                     |
-| `-ls`, `-list-sources`    |                                                     |
-| `-silent`                 |                                                     |
+Here is a little cheatsheet (it is not comprehensive, but only includes (subjectively) the most commonly used options).
+
+| option                    | description                                                                           |
+| ------------------------- | ------------------------------------------------------------------------------------- |
+| `-d`                      | domains to find subdomains for                                                        |
+| `-dL`                     | file with a list of domains for subdomain discovery                                   |
+| `-s`, `-sources`          | use only specific sources for enumeration                                             |
+| `-recursive`              | use only sources that can handle subdomains recursively                               |
+| `-all`                    | use all sources for enumeration (slow)                                                |
+| `-es`, `-exclude-sources` | sources to exclude from enumeration                                                   |
+| `-m`, `-match`            | subdomain or list of subdomain to match (file or comma separated)                     |
+| `-f`, `-filter`           | subdomain or list of subdomain to filter (file or comma separated)                    |
+| `-rl`, `-rate-limit`      | maximum number of http requests to send per second                                    |
+| `-t`                      | number of concurrent goroutines for resolving (only with `-active`), default is `10`  |
+| `-up`, `-update`          | update subfinder to latest version                                                    |
+| `-o`, `-output`           | output file                                                                           |
+| `-oJ`, `-json`            | write output in JSON                                                                  |
+| `-oD`, `-output-dir`      | directory to write output (`-dL` only)                                                |
+| `-cs`, `-collect-sources` | include all sources in the output                                                     |
+| `-oI`, `-ip`              | include host IP in output (`-active` only)                                            |
+| `-pc`, `-provider-config` | provider config file, default `/home/username/.config/subfinder/provider-config.yaml` |
+| `-nW`, `-active`          | display active subdomains only                                                        |
+| `-proxy`                  | http proxy to use with subfinder                                                      |
+| `-ei`, `-exclude-ip`      | exclude IPs from the list of domains<br>                                              |
+| `-v`                      | show verbose output<br>                                                               |
+| `-ls`, `-list-sources`    | list all available sources                                                            |
+| `-silent`                 | show only subdomains in output                                                        |
 
 To list all available sources:
 
@@ -214,10 +191,10 @@ To list all available sources:
 subfinder -ls
 ```
 
-to enumerate subdomains of a single domain:
+to enumerate subdomains of a single domain and save the results into a file:
 
 ```bash
-subfinder -d target.com
+subfinder -d target.com -o subdomains.txt
 # several targets: subfinder -d target.com,target.net
 ```
 
@@ -333,7 +310,6 @@ Usage:
 gitlab-subdomains -t <GitLab_token> -o output.txt -d target.com
 gitlab-subdomains -t <GitHub_token> -o output.txt -d target.com
 ```
-
 ## Certificate Transparency
 
 >Certificate Transparency (CT) is an Internet security standard and open-source framework for monitoring and auditing digital certificates.
@@ -343,14 +319,15 @@ CT creates a system of publicly available certificate transparency logs to recor
 Since CT logs are open and publicly available, they can be used for subdomain enumeration: one can query all the TLS certificates that have been issued for that domain to then reveal the certificates issued to its subdomains.
 
 Logs are available here:
+
 - [`crt.sh`](https://crt.sh/)
 - [`Censys`](https://censys.io/)
 
-Also, instead of manually querying domain certificates, one can automate the search with the [`CTRF`](https://github.com/UnaPibaGeek/ctfr) tool written in Python.
+Besides, instead of manually querying domain certificates, one can automate the search with the [`CTFR`](https://github.com/UnaPibaGeek/ctfr) tool, written in Python.
 
 | tool                                        | language | tags     | description                                                                                       |
 | ------------------------------------------- | -------- | -------- | ------------------------------------------------------------------------------------------------- |
-| [CTRF](https://github.com/UnaPibaGeek/ctfr) | Python   | #CT_logs | Queries Certificate Transparency (CT) logs associated with a given domain to find its subdomains. |
+| [CTFR](https://github.com/UnaPibaGeek/ctfr) | Python   | #CT_logs | Queries Certificate Transparency (CT) logs associated with a given domain to find its subdomains. |
 
 Installation:
 
@@ -360,12 +337,31 @@ cd ctfr
 pip3 install -r requirements.txt
 ```
 
+For convenience (this makes `ctfr` available globally in the system, not only in the `ctfr` directory, and allows to invoke it with under the alias `ct`):
+
+```bash
+mv ./ctfr.py /usr/local/bin
+chmod u+x /usr/local/bin
+alias ct='ctfr.py'
+```
+
 Usage:
 
 ```bash
-python crtf.py -d github.com -o output.txt
+ct -d github.com -o ct.txt
 ```
 
+
+
+The problem with `ctfr` is that it also outputs wildcards, as there might be certificates that are created for multiple domains. To remove lines with `*.` characters, the `grep` command can be used. But prior to it, save wildcards, also with `grep`, for future investigation just in case (these subdomains are very likely to be valid, and are likely to contain interesting subdomains deeper).
+
+```bash
+# to save all wildcards in a seprate file:
+cat ct_subdomains.txt | grep "*." > ct_wildcards.txt
+
+# to remove wildcards:
+cat ct_subdomains.txt | grep -v [--invert-match] "*." > ct_subdomains.txt
+```
 
 Online TLS certificate checkers:
 - [`Qualys`](https://www.ssllabs.com/ssltest)
@@ -397,18 +393,12 @@ There are tools that can automate subdomain enumeration with search operators:
 | [GoogleEnum](https://github.com/psjs97/GoogleEnum) | Python   | #Google_dork_automation <br>#subdomain_enumeration | Automates the enumeration of subdomains with Google Dorks.                                                                  |
 | [sd-goo](https://github.com/darklotuskdb/sd-goo)   | Bash     | #Google_dork_automation<br>#subdomain_enumeration  | Automates the enumeration of subdomains with Google dorks. It also bypasses page filters and can be used with a VPN or Tor. |
 
-Usage:
-
-```bash
-python google_enum.py -d target.com -o ./output.txt
-```
-
 Lists of Google Dorks:
 
 - [`7000_google_dork_list.txt`](https://github.com/aleedhillon/7000-Google-Dork-List/blob/master/7000_google_dork_list.txt)
 - [`1000 Google Dorks List`](https://gbhackers.com/latest-google-dorks-list/)
 
-## Reverse DNS lookup
+## Reverse DNS lookup 
 
 In contrast to the resolution of a domain name to an IP address, reverse DNS lookup refers to querying DNS records associated with an IP address in order to identify related domains and subdomains.
 
@@ -421,12 +411,14 @@ IP address ranges can be discovered in multiple ways:
 - OSINT: `whois` and reverse `whois` 
 - identifying CIDR ranges in-scope directly, if given 
 
-Having prepared a list of IP address, one needs to perform a mass DNS querying for these addresses. One of the options is the `HostHunter` tool.
+>All the methods are described [here](https://github.com/0xtr1gger/hack_the_web/blob/main/information_gathering/subdomain_enumeration/IP_address_range_discovery.md).
 
+Having prepared a list of IP address, one needs to perform a mass DNS querying for these addresses. One of the options is the `HostHunter` tool.
 
 | tool                                                   | language | tags             | description                                                                                                                                                                                          |
 | ------------------------------------------------------ | -------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [HostHunter](https://github.com/SpiderLabs/HostHunter) | Python   | #DNS_enumeration | A tool to efficiently discover and extract hostnames provides a large set of target IPv4 or IPv6 addresses. Output can be generated in multiple formats, including CSV, TXT, or Nessus file formats. |
+
 
 ## Subject alternate name (SAN)
 
@@ -456,48 +448,9 @@ Example:
 ```bash
 openssl s_client -connect wikimedia.org:443 2>/dev/null | openssl x509 -noout -ext subjectAltName | grep -oP '(?<=DNS:|IP Address:)[^,]+'|sort -uV
 ```
-```
-mediawiki.org
-w.wiki
-wikibooks.org
-wikidata.org
-wikifunctions.org
-wikimedia.org
-wikimediafoundation.org
-wikinews.org
-wikipedia.org
-wikiquote.org
-wikisource.org
-wikiversity.org
-wikivoyage.org
-wiktionary.org
-wmfusercontent.org
-*.mediawiki.org
-*.m.mediawiki.org
-*.m.wikibooks.org
-*.m.wikidata.org
-*.m.wikimedia.org
-*.m.wikinews.org
-*.m.wikipedia.org
-*.m.wikiquote.org
-*.m.wikisource.org
-*.m.wikiversity.org
-*.m.wikivoyage.org
-*.m.wiktionary.org
-*.planet.wikimedia.org
-*.wikibooks.org
-*.wikidata.org
-*.wikifunctions.org
-*.wikimediafoundation.org
-*.wikimedia.org
-*.wikinews.org
-*.wikipedia.org
-*.wikiquote.org
-*.wikisource.org
-*.wikiversity.org
-*.wikivoyage.org
-...
-```
+
+![[SAN-subdomain-wikimedia.png]]
+
 The process can also be automated with the [`san_subdomain_enum`](https://github.com/appsecco/the-art-of-subdomain-enumeration/blob/master/san_subdomain_enum.py) Python script:
 
 ```bash
@@ -508,7 +461,104 @@ python ./san_subdomain_enum.py domain.com
 | -------------------------------------------------------------------------------------------------------------------- | -------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | [san_subdomain_enum](https://github.com/appsecco/the-art-of-subdomain-enumeration/blob/master/san_subdomain_enum.py) | Python   | #SAN_subdomain_enumeration | Extracts domains and subdomains listed in Subject Alternate Name (SAN) records of TLS certificates for a given domain. |
 
+## Favicon hashes
+
+>A <span style="color:#f00000">favicon</span> (favorite icon), aka website icon, tab icon, URL icon, etc., is a file containing one or more small icons associated with a particular website or web page. It is displayed to the left side of the webpage title the tabs, bookmarks, and links bars.
+
+![[favicon_wiki.png]]
+
+Typically, favicons are in ICO, SVG, and PNG formats, but they can also be JPEG or even animated GIF pictures. 
+
+Favicons are interesting as that they can help to find domains and subdomains related to the target website, as website owners tend to use the save favicon image across all or most of their resources. 
+
+For search, a hash function is applied to the icon to obtain its hash-string representation, which will serve as an identifier for the favicon. The most common hash function used for that purpose is called <span style="color:#f00000">MurmurHash</span>. 
+
+The obtained hash value can then be used to search with various search engines, such as `Shodan`, which calculates MurmurHash values for every single favicon it discovers and indexes this information
+
+```
+https://www.shodan.io/search?query=http.favicon.hash:FAVICON_HASH
+```
+
+Most often, favicons are located at `https://domain.com/favicon.ico` addresses under the target domain. However, just as there are various image formats that can be used for favicons, there are a vast variety of places where the favicon can reside. 
+
+A better way to find a favicon is to inspect the HTML source code of the page with a favicon, then search for keywords such as `favicon`, `fav`, `.ico`, `.img`, `.svg`, etc. It may be needed to manually examine the code to find the link to the image. Favicons are commonly specified in the `<head>` section of an HTML document, usually right after `<title>`, in the `<link>` tag with the attribute `rel="icon"`:
 
 
+```HTML
+<head>  
+  <title>page with a favicon</title>  
+  <link rel="icon" type="image/x-icon" href="/images/favicon.ico">  
+</head>  
+<body>
+```
+
+Apart from target subdomains, favicon hashes are useful in identifying fishing websites. For this reason, unfortunately, results obtained from a favicon hash search can be full of false positives (this depends on the target itself).
+
+Here is a tiny Python script to retrieve a MurmurHash from a favicon:
+
+```Python
+import mmh3
+import requests
+import codecs
+
+response = requests.get('https://domain.com/favicon.ico')
+favicon = codecs.encode(response.content, 'base64')
+mmhash = mmh3.hash(favicon)
+print(mmhash)
+```
+
+To install MurmurHash Python library, `mmh3`:
+
+```bash
+pip install mmh3
+```
+
+![[mmh_python.png]]
+
+Online services to retrieve favicon hashes:
+- [`favicon-hash`](https://favicon-hash.kmsec.uk/)
+
+Resources to search by favicon hashes:
+- [Shodan](https://shodan.io)
+- [CriminalIP](https://www.criminalip.io/)
+
+[OWASP](https://owasp.org/www-community/favicons_database) also hosts a small community-driven database of MD5 favicon hashes consisting of about 5.7 hundred entries.
+
+The last, but not least to mention, is [`FavFreak`](https://github.com/devanshbatham/FavFreak) tool written in Python that can be used to automate the whole process of calculating and searching by favicon hashes.
+
+## Reverse `whois`
+
+WHOIS is a protocol for querying databases dedicated to storing information about domain name registrants and registries. WHOIS databases include domain names, IP address blocks, ASNs, and contact information for a given registrant or registry. It is widely used in bug hunting and penetration testing during the reconnaissance stage.
+
+In turn, reverse WHOIS is a method of searching for domain names based on the registrant's WHOIS database information. E.g., suppose a domain name `target.com` is registered by John Doe, who has an email address `johndoe@email.com`. The logic behind reverse WHOIS is to search for any other domains that list the same email address, `johndoe@email.com`, in the registrant's contact field. If `subdomain.target.com` or `domain.com` have the same registrant, they are probably related.
+
+Reverse WHOIS is more helpful in open-scope programs, but subdomains can also be discovered in this way.
+
+>The reverse `whois` lookup refers to querying the WHOIS database by name, address, phone number, email, and other information about the registrant organization to retrieve all the domain names related to that organization. With this technique, it might be possible to identify assets of the target company that are not tied to it in any other way.
+
+There are many online resources that offer reverse WHOIS search:
+
+- [`BigDomainData`](https://www.bigdomaindata.com/reverse-whois/)
+- [`reversewhois.io`](https://www.reversewhois.io/)
+- [`Viewdns.info`](https://viewdns.info/reversewhois/)
+- [`osint.sh`](https://osint.sh/reversewhois/?__cf_chl_f_tk=SdZ4wNfJiVLHWUv56QZ2BmhxGn9BM95BOxmeYtCdNNA-1714630838-0.0.1.1-1493)
+- [`domainq`](https://www.domainiq.com/reverse_whois)
+- [`WhoisFreaks`](https://whoisfreaks.com/tools/whois/reverse/search)
+- [`WHOXY`](https://www.whoxy.com/reverse-whois/)
+
+## DNS Enumeration with Cloudflare
+
+After registering for a free account at [Cloudflare](https://www.cloudflare.com), one can add any domain to their list. This can be done by logging into the Cloudflare dashboard and clicking on the "Add site" option. Then, Cloudflare itself will enumerate subdomains of a given domain based on data available to it, and return it in JSON format with `A`, `AAAA`, and `CNAME` records for each subdomain. And among all goods, the scanning is quite fast, usually no more than a couple of minutes.
+## Rapid7 Project Sonar FDNS enumeration
+
+[Rapid7 Project Sonar](https://opendata.rapid7.com/) actively scans the Internet to gather data about millions of domain names, and subsequently provides access to the datasets for query, either for free or, at times, for a fee.
+
+One of the key datasets hosted by Project Sonar is a collection of the `ANY` DNS queries for millions of domains. The dataset is useful for identifying DNS misconfigurations and gaining insights into the attack surface, aside from disclosing subdomains.
+
+>`ANY` DNS query, aka wildcard DNS queries, are a type of DNS query that returns all records of all types known to the name server for a given domain name. 
+
+In other words, when an `ANY` query is sent to a DNS server, the server returns all records of all types (`A`, `AAAA`, `CNAME`, `MX`, `NS`, `PTR`, `SRV`, `SOA`, `TXT`, `CAA`, `DS`, and `DNSKEY`) for the specified domain name. 
+
+Querying Rapid7 datasets requires an account and is deeply time-consuming. However, it often returns a huge number of subdomains that nobody would ever be able to find using vanilla approaches.
 
 
