@@ -30,7 +30,7 @@ Both methods are considered active as they require direct interaction with the a
 
 - Dictionary brute-force has proven to be effective in detecting locations detached from the main application: it complements the results of web spiders with previously undiscovered files and directories.
 
-- ## Web spidering 
+## Web spidering 
 
 >Web spidering, aka web crawling, involves recursive scanning of web pages for links pointing to other pages under the same domain, then following every found link and repeating the process until no links are left. 
 
@@ -239,5 +239,107 @@ katana -u https://ginandjuice.shop
 
 ![katana_hin juice shop](https://github.com/0xtr1gger/hack_the_web/assets/167773454/447355c7-ab93-439f-86bf-9d74efd7659c)
 
+## Directory brute-force
+
+>Web directory and file brute-force enumeration involves systematically trying to access directories and files in a web application by guessing their names with a wordlist.
+
+Directory brute-forcing aims to enumerate hidden files and directories inside a web application by systematically probing for known or common paths with a dictionary. The principle is straightforward: possible paths are substituted as a request parameter through a wordlist. It can be either directory names or common full paths to files. 
+
+```
+https://target.com/admin
+https://target.com/admin.php
+https://target.com/Admin
+. . .
+https://target.com/robots.txt
+https://target.com/.well-known/security.txt
+https://target.com/dev/
+. . . 
+```
+
+>N.B.: Brute-force enumeration implies sending numerous requests to the server; it should be carried out with caution to avoid accidental DoS attacks ~~and not end up on trial~~.
+>The preferable approach is to impose a delay between requests or limit the number of requests per second. In this case, enumeration will take longer, but this is considered polite and safe testing.
+
+>N.B.: The enumeration is better conducted on top of directories previously discovered with a web spider to deepen the discovery and increase the chances of finding sensitive locations.
+
+Directory brute-force can be automated with various tools:
+
+| tool                                                 | language | tags                                                           | description                                                                                                                                                                                                                                                          |
+| ---------------------------------------------------- | -------- | -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [ffuf](https://github.com/ffuf/ffuf)                 | Go       | #fuzzing                                                       | A fast and flexible web fuzzer written in Go.                                                                                                                                                                                                                        |
+| [wfuzz](https://github.com/xmendez/wfuzz)            | Python   | #fuzzing                                                       | A simple web fuzzer that replaces any reference to the `FUZZ` keyword by the value in a wordlist.                                                                                                                                                                    |
+| [dirsearch](https://github.com/maurosoria/dirsearch) | Python   | #directory_bruteforce                                          | a fast and flexible directory enumeration tool. supports filtering, usage of proxy servers, wordlist formats, and many other features.                                                                                                                               |
+| [gobuster](https://github.com/OJ/gobuster)           | Go       | #bruteforce<br>#directory_bruteforce <br>#subdomain_bruteforce | Gobuster is a tool used to brute-force:<br><br>- URIs (directories and files) in web sites.<br>- DNS subdomains (with wildcard support).<br>- Virtual Host names on target web servers.<br>- Open Amazon S3 buckets<br>- Open Google Cloud buckets<br>- TFTP servers |
+| [dirstalk](https://github.com/stefanoj3/dirstalk)    | Go       | #directory_bruteforce                                          | a modern alternative to `dirb`. a multi threaded application designed to bruteforce paths on web servers.                                                                                                                                                            |
+
+But honestly, it doesn't really matter which enumeration tool is used because they all work on the same principle. Choosing the right tool is entirely up to personal preference.
+
+Rather, the key to successful enumeration is the choice of the right wordlists to be used, and how they will be used.
 
 
+#### Efficiency: on wordlists
+
+
+Many bug hunters make the same mistake: they use the same wordlist for enumeration of the contents of each target application in every part of it.
+
+But you can't really hope to find .NET files, such as `.aspx`, on a Linux server running a PHP website. Similarly, searching for `.jsp` files under the domain dedicated to static assets such as images and CSS, e.g., `assets.target.com`, makes very little sense either. Otherwise this is just a waste of time, bandwidth, and electrical power.
+
+Instead, wordlists should be tailored to the technologies used in the web application and on the target web server.
+
+>This doesn't mean that you can't use general wordlists at all. To get a general overview of the application, a quick run through a small list of the most common paths might be a good idea. However, more thorough investigations should be more focused.
+
+In general, when choosing a wordlist for directory and file enumeration, consider the following two factors:
+
+- the underlying technology stack of the application
+- the purpose of the part of the tested application
+
+The technologies used in the application can be determined using fingerprinting techniques. Here is a whole article dedicated for this: [[🖉fingerprinting]].
+
+One of the most promising strategies to identify the technology stack powering the application is to analyze already-discovered files. Pay attention to configuration files, file extensions, and directory names: all of these may indicate the programming languages and frameworks used in the application.
+
+Once you have an idea of what's behind the application, pick an appropriate wordlist and then start enumeration. Below are several notable options:
+
+| resource                                                                   | description                                                                                                                                                                                           |
+| -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [awesome-wordlists]()                                                      | A curated list of wordlists for bruteforcing and fuzzing.                                                                                                                                             |
+| [Assetnote Wordlists](https://wordlists.assetnote.io/)                     | One of the largest sets of wordlists for enumeration of different kinds: API endpoints, subdomains, directories and files, files specified to technologies, e.g., for Flask, Laravel, Nginx, etc.     |
+| [SecLists](https://github.com/danielmiessler/SecLists)                     | A collection of multiple types of lists for fuzzing, enumeration, and vulnerability testing.                                                                                                          |
+| [trickest wordlists](https://github.com/trickest/wordlists)                | Regularly updated information security wordlists.                                                                                                                                                     |
+| [xajkep wordlists](https://github.com/xajkep/wordlists?tab=readme-ov-file) | A quite old, but still useful collection of wordlists of various kinds, including language dictionaries (English, French, Spanish, Irish, etc.), file discovery (PHP, ASP, JSP, etc.), and much more. |
+| [Bug-Bounty-Wordlists](https://github.com/Karanxa/Bug-Bounty-Wordlists)    | A repository with a wide variety of wordlists for testing and enumeration, including server-specific (Nginx, Tomcat, etc.) and technology-specific (SQL, WordPress, ASP, etc.) lists for enumeration. |
+| [KaliLists](https://github.com/3ndG4me/KaliLists/tree/master)              | Default lists from Kali Linux, useful when Kali itself is not in use.                                                                                                                                 |
+| [random-robbie](https://github.com/random-robbie/bruteforce-lists)         | a good collection of wordlists for enumeration sorted by  technology.                                                                                                                                 |
+
+#### On responses: status codes
+
+Whether a certain requested page does or doesn't exist is usually determined based on response codes returned by the server.
+
+The server's response codes are commonly used to determine whether a requested page exists or not.
+
+Generally, `4xx` codes indicate that the requested resource doesn't exist, while `2xx` are signs of successful discovery. However, this rule is not universally applied: many applications handle requests for nonexistent resources by returning custom error messages, or `200` response codes. Furthermore, some requests for existing resources may result in a non-`200` response. 
+
+For this reason, it is recommended to not fall into conclusions hastily. Instead, first walk through the application to watch how the server handles requests to existing and non-existent resources, malformed requests, requests to protected resources, and so on. On the whole, responses tend to be consistent throughout the application (but not always), and based on the gathered data, it is much easier to analyze results from brute-force enumeration.
+
+## Strategy
+
+To summarize all the strategies discussed, below is a rough sketch of a methodology that can be used to enumerate files and directories of a web application:
+
+1. Run a web spider to get a general idea of the application. 
+
+2. Analyze the results. Walk through the list of obtained URLs:
+	
+	- Are there file extensions or directory/file names that indicate the programming language and frameworks in use?
+
+	- Seek to fingerprint the underlying technology stack. This will significantly reduce the number of files and directories to probe.
+
+	- Try to understand how the server deals with requests for different resources. Make several manual requests for known valid and invalid resources, paying attention to:
+		- redirects
+		- status codes
+		- request parameters
+
+	- Identify the file/directory naming conventions used by developers; note frequently encountered words and collocations specific to the application. 
+
+3. Pick several wordlists relevant to the technology stack of the application from open-source collections. Additionally, based on your notes, generate custom wordlists for enumeration; this can be automated with tools like [`CeWL`](https://github.com/digininja/CeWL), [`crunch`](https://salsa.debian.org/debian/crunch), [`bopscrk`](https://github.com/r3nt0n/bopscrk), etc. 
+
+3. Use brute-force enumeration tools to send requests to the target server and iterate over the prepared list.
+
+4. Analyze the responses received from the server. Based on the information gathered previously, try to identify valid resources.
